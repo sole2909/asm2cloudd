@@ -62,14 +62,10 @@ app.post('/search', async (req, res) => {
     let client = await MongoClient.connect(url);
     let dbo = client.db("technology");
     let nameInput = req.body.txtName; // dungf để lấy tên 
-    if (nameInput.includes('*')) {
-        return res.status(500).send({ message: "ban nhap loi" })
-    }
     let searchCondition = new RegExp(nameInput, 'i')//lấy tên không phân biệt chữ hoa chữ thường
     let results = await dbo.collection("product").find({ name: searchCondition }).toArray();//tìm văn bản
     res.render('index', { model: results })
 })
-
 
 
 app.get('/insert', (req, res) => {
@@ -78,18 +74,27 @@ app.get('/insert', (req, res) => {
 
 app.post('/doInsert', async (req, res) => {
     var nameInput = req.body.txtName;
-    if (nameInput.length < 6 || nameInput.includes('*')) {
-        return res.status(500).send({ message: "ban nhap loi" })
-    }
-    var priceInput = req.body.txtPrice;
-    var newProduct = { name: nameInput, price: priceInput };
-    let client = await MongoClient.connect(url);
-    let dbo = client.db("technology");
-    await dbo.collection("product").insertOne(newProduct);
-    res.redirect('/')
+    // if (nameInput.length < 6 || nameInput.includes('number')) {
+    //     return res.status(500).send({ message: "ban nhap loi" })
+    // }
+    if(nameInput.length > 6){
+        var priceInput = req.body.txtPrice;
+        var newProduct = { name: nameInput, price: priceInput };
+        let client = await MongoClient.connect(url);
+        let dbo = client.db("technology");
+        await dbo.collection("product").insertOne(newProduct);
+        res.redirect('/')     
+    } 
+    res.render('newProduct',{error: 'Name must be more than 8 character and no number'})
+
 })
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT);
 console.log('server is running at 3000')
+
+
+
+
+
 
