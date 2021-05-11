@@ -74,19 +74,17 @@ app.get('/insert', (req, res) => {
 
 app.post('/doInsert', async (req, res) => {
     var nameInput = req.body.txtName;
-    // if (nameInput.length < 6 || nameInput.includes('number')) {
-    //     return res.status(500).send({ message: "ban nhap loi" })
-    // }
-    if(nameInput.length > 6){
-        var priceInput = req.body.txtPrice;
-        var newProduct = { name: nameInput, price: priceInput };
-        let client = await MongoClient.connect(url);
-        let dbo = client.db("technology");
-        await dbo.collection("product").insertOne(newProduct);
-        res.redirect('/')     
+    if(nameInput.length < 5){
+        res.render('newProduct',{error: 'Name must be more than 5 character and no number'})
     } 
-    res.render('newProduct',{error: 'Name must be more than 6 character'})
-
+    var priceInput = req.body.txtPrice;
+    var productcodeInput = req.body.txtProductcode;
+    var colorInput = req.body.txtColor;
+    var newProduct = { name: nameInput, price: priceInput, productcode: productcodeInput, color: colorInput };
+    let client = await MongoClient.connect(url);
+    let dbo = client.db("technology");
+    await dbo.collection("product").insertOne(newProduct);
+    res.redirect('/')
 })
 
 const PORT = process.env.PORT || 3000
