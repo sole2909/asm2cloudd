@@ -3,6 +3,9 @@ var hbs = require('hbs')
 
 var app = express()
 
+
+var bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }))
 app.set('view engine', 'hbs')
 
 var url = 'mongodb+srv://kai:doiaido11@cluster0.7rn9g.mongodb.net/test'; // CẦN ĐỊA CHỈ ĐỂ KẾT NỐI
@@ -59,34 +62,34 @@ app.post('/search', async (req, res) => {
     let client = await MongoClient.connect(url);
     let dbo = client.db("technology");
     let nameInput = req.body.txtName; // dungf để lấy tên 
+    if (nameInput.includes('*')) {
+        return res.status(500).send({ message: "ban nhap loi" })
+    }
     let searchCondition = new RegExp(nameInput, 'i')//lấy tên không phân biệt chữ hoa chữ thường
     let results = await dbo.collection("product").find({ name: searchCondition }).toArray();//tìm văn bản
     res.render('index', { model: results })
 })
 
+
+
 app.get('/insert', (req, res) => {
-    res.render('newProduct', {message: 'Invalid user!'})
+    res.render('newProduct', { message: 'Invalid user!' })
 })
 
 app.post('/doInsert', async (req, res) => {
     var nameInput = req.body.txtName;
+    if (nameInput.length < 6 || nameInput.includes('*')) {
+        return res.status(500).send({ message: "ban nhap loi" })
+    }
     var priceInput = req.body.txtPrice;
-    var productcodeInput = req.body.txtProductcode;
-    var colorInput = req.body.txtColor;
-if(nameInput.length < 3){
-    res.render('newproduct',{message: 'Invalid user!'})
-}
-else{
-    var newProduct = { name: nameInput, price: priceInput, productcode: productcodeInput, color: colorInput };
+    var newProduct = { name: nameInput, price: priceInput };
     let client = await MongoClient.connect(url);
     let dbo = client.db("technology");
     await dbo.collection("product").insertOne(newProduct);
     res.redirect('/')
-}
 })
 
-
-const PORT = process.env.PORT||3000 
-app.listen(PORT); 
+const PORT = process.env.PORT || 3000
+app.listen(PORT);
 console.log('server is running at 3000')
 
