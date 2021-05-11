@@ -85,7 +85,7 @@ app.post('/doInsert', async (req, res) => {
         await dbo.collection("product").insertOne(newProduct);
         res.redirect('/')     
     } 
-    res.render('newProduct',{error: 'Name must be more than 8 character and no number'})
+    res.render('newProduct',{error: 'Name must be more than 6 character'})
 
 })
 
