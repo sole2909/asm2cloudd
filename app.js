@@ -73,13 +73,10 @@ app.get('/insert', (req, res) => {
 })
 
 app.post('/doInsert', async (req, res) => {
-    var nameInput = req.body.txtName;
-    if(nameInput.length < 5){
-        res.render('newProduct',{error: 'Name must be more than 5 character and no number'})
-    } 
     var priceInput = req.body.txtPrice;
     var productcodeInput = req.body.txtProductcode;
     var colorInput = req.body.txtColor;
+    var nameInput = req.body.txtName;
     var newProduct = { name: nameInput, price: priceInput, productcode: productcodeInput, color: colorInput };
     let client = await MongoClient.connect(url);
     let dbo = client.db("technology");
